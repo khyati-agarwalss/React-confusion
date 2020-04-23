@@ -17,23 +17,32 @@ function RenderDish({dish}) {
     );
 }
 
-function RenderComments({comments}) {
+function RenderComments({comments, addComment, dishId}) {
     if(comments != null) {
-        return comments.map(comment => {
-            return (
-            <ul key={comment.id} className="list-unstyled">
-                <li>{ comment.comment }</li>
-                <li>
-                    -- { comment.author }{" "}{
-                        new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comment.date)))
-                    }
-                </li>
-            </ul>
-            );
-        });
+        return (
+            <div className="col-12 col-md-5 m-1">
+                <h4>Comments</h4>
+                <ul className="list-unstyled">
+                    {comments.map(comment => {
+                        return (
+                            <ul key={comment.id} className="list-unstyled">
+                                <li>{ comment.comment }</li>
+                                <li>-- { comment.author }{" "}{
+                                    new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comment.date)))
+                                }</li>
+                            </ul>
+                        );
+                    })}
+                </ul>
+                <CommentForm dishId={dishId} addComment={addComment} />
+            </div>
+        );
     } else {
         return (
-            <div></div>
+            <div className="col-12 col-md-5 m-1">
+                <h4>Comments</h4>
+                <CommentForm dishId={dishId} addComment={addComment} />
+            </div>
         );
     }
 }
@@ -59,11 +68,7 @@ function RenderComments({comments}) {
                 </div>
                 <div className="row">
                     <RenderDish dish = {props.dish} />
-                    <div className="col-12 col-md-5 mt-1">
-                        <h3>Comments</h3>
-                        <RenderComments comments = {props.comments} />
-                        <CommentForm />
-                    </div>   
+                    <RenderComments comments={props.comments} addComment={props.addComment} dishId={props.dish.id} /> 
                 </div>
             </div>
         );
@@ -94,8 +99,7 @@ export class CommentForm extends Component {
 
     handleSubmit(values) {
         this.toggleModal();
-
-        this.props.postComment(this.props.dishId, values.rating, values.author, values.comment);
+        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
     }
 
     render() {
